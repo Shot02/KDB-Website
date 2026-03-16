@@ -3,7 +3,7 @@ crispy-bootstrap5==2024.10
 Django==4.2.7
 django-allauth==64.2.1
 django-ckeditor==6.7.0
-django-crispy-forms==2.1
+django-crispy-forms==2.3
 django-js-asset==2.2.0
 gunicorn==21.2.0
 whitenoise==6.6.0
