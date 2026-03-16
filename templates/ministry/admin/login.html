@@ -178,7 +178,7 @@
             {% endfor %}
         {% endif %}
         
-        <form method="post" action="{% url 'account_login' %}">
+        <form method="post" action="{% url 'ministry:account_login' %}">
             {% csrf_token %}
             
             <div class="form-group">
@@ -195,18 +195,6 @@
                 <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
             </button>
         </form>
-        
-        <div class="divider">
-            <span>OR</span>
-        </div>
-        
-        <a href="{% url 'google_login' %}" class="btn-google">
-            <i class="bi bi-google me-2"></i>Sign in with Google
-        </a>
-        
-        <div class="back-link">
-            <a href="{% url 'home' %}"><i class="bi bi-arrow-left me-1"></i>Back to Website</a>
-        </div>
     </div>
 </body>
 </html>
