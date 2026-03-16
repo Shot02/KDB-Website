@@ -2,14 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-env/
 venv/
+env/
 kdbenv/
-ENV/
-env.bak/
-venv.bak/
 
 # Django
 *.log
@@ -19,21 +14,14 @@ db.sqlite3-journal
 media/
 staticfiles/
 
-# Environment variables
+# Environment
 .env
 .env.local
-.env.production
 
-# VSCode
+# VS Code
 .vscode/
-*.code-workspace
-
-# IDE
-.idea/
-*.swp
-*.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
+
