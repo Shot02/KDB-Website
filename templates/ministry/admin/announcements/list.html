@@ -1,0 +1,14 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% block title %}Announcements{% endblock %}
+{% block page_title %}Manage Announcements{% endblock %}
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3>Announcements</h3>
+        <a href="{% url 'ministry_admin:announcement_add' %}" class="btn btn-admin-primary">
+            <i class="bi bi-plus-circle"></i> Add Announcement
+        </a>
+    </div>
+    <p class="text-center py-4">Announcement management coming soon...</p>
+</div>
+{% endblock %}

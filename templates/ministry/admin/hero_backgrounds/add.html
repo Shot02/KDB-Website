@@ -1,0 +1,115 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Add Hero Background{% endblock %}
+
+{% block page_title %}Add New Background{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3><i class="bi bi-plus-circle me-2"></i>Add New Background</h3>
+        <a href="{% url 'ministry_admin:hero_backgrounds' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" class="mt-4">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group mb-3">
+                    <label class="form-label">Title (Optional)</label>
+                    <input type="text" name="title" class="form-control-admin" 
+                           placeholder="e.g., Mountain View, Worship Scene">
+                    <div class="form-text">Give this background a name for easy identification</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Upload Video</label>
+                            <input type="file" name="video" class="form-control" accept="video/*" 
+                                   onchange="previewMedia(this, 'videoPreview')">
+                            <div class="form-text">MP4 format, max 20MB</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Upload Image</label>
+                            <input type="file" name="image" class="form-control" accept="image/*"
+                                   onchange="previewMedia(this, 'imagePreview')">
+                            <div class="form-text">JPG/PNG, max 5MB</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="is_active" class="form-check-input" id="is_active" checked>
+                    <label class="form-check-label fw-bold" for="is_active">
+                        Active
+                    </label>
+                    <div class="form-text">Only active backgrounds will be used on the site</div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="preview-card">
+                    <h5 class="mb-3">Preview</h5>
+                    <div id="videoPreviewContainer" style="display: none;">
+                        <video id="videoPreview" controls class="img-fluid rounded"></video>
+                    </div>
+                    <div id="imagePreviewContainer" style="display: none;">
+                        <img id="imagePreview" class="img-fluid rounded">
+                    </div>
+                    <div id="noPreview" class="text-center py-4">
+                        <i class="bi bi-image" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="mt-2 text-muted">Select a file to preview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-admin-primary">
+                <i class="bi bi-save"></i> Save Background
+            </button>
+            <a href="{% url 'ministry_admin:hero_backgrounds' %}" class="btn btn-outline-secondary ms-2">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+function previewMedia(input, type) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    
+    if (type === 'videoPreview') {
+        document.getElementById('videoPreviewContainer').style.display = 'block';
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+        document.getElementById('noPreview').style.display = 'none';
+        
+        reader.onload = function(e) {
+            const video = document.getElementById('videoPreview');
+            video.src = e.target.result;
+        }
+    } else {
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+        document.getElementById('videoPreviewContainer').style.display = 'none';
+        document.getElementById('noPreview').style.display = 'none';
+        
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+        }
+    }
+    
+    reader.readAsDataURL(file);
+}
+</script>
+{% endblock %}

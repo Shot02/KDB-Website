@@ -1,0 +1,233 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Add New Program{% endblock %}
+
+{% block page_title %}Add New Weekly Program{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-plus-circle me-2"></i>Add New Program</h3>
+                <a href="{% url 'ministry_admin:program_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Programs
+                </a>
+            </div>
+            
+            <form method="post" class="mt-4" id="programForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Day <span class="text-danger">*</span></label>
+                            <select name="day" class="form-control-admin" required>
+                                <option value="">Select Day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Order</label>
+                            <input type="number" name="order" class="form-control-admin" value="0" min="0">
+                            <div class="form-text">Display order (lower numbers appear first)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Program Title <span class="text-danger">*</span></label>
+                    <input type="text" name="title" class="form-control-admin" 
+                           placeholder="e.g., Bible Study, Sunday Service" required>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Start Time <span class="text-danger">*</span></label>
+                            <input type="time" name="start_time" class="form-control-admin" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">End Time <span class="text-danger">*</span></label>
+                            <input type="time" name="end_time" class="form-control-admin" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control-admin" rows="3" 
+                              placeholder="Brief description of the program"></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Icon</label>
+                            <select name="icon" class="form-control-admin select2" id="iconSelect">
+                                <option value="bi-book">Book</option>
+                                <option value="bi-journal-bookmark">Journal</option>
+                                <option value="bi-mortarboard">Mortarboard</option>
+                                <option value="bi-person-workspace">Workspace</option>
+                                <option value="bi-building">Building</option>
+                                <option value="bi-mic">Mic</option>
+                                <option value="bi-music-note">Music</option>
+                                <option value="bi-cup-hot">Cup</option>
+                                <option value="bi-people">People</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Icon Preview</label>
+                            <div class="icon-preview">
+                                <i class="bi bi-book" id="iconPreview"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-admin-primary">
+                        <i class="bi bi-save"></i> Create Program
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary ms-2">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-info-circle"></i> Quick Tips</h3>
+            </div>
+            <ul class="list-unstyled">
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Day:</strong> Select the day of the week
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Time:</strong> Use 24-hour format (e.g., 14:00 for 2PM)
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Order:</strong> Lower numbers appear first
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Icons:</strong> Choose an icon that represents the program
+                </li>
+            </ul>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-eye"></i> Preview</h3>
+            </div>
+            <div class="program-preview p-3" id="livePreview">
+                <div class="text-center">
+                    <div class="preview-icon mb-2">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h5 id="previewTitle">Program Title</h5>
+                    <p class="text-muted" id="previewDay">Monday</p>
+                    <p class="badge bg-primary" id="previewTime">00:00 - 00:00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Icon preview
+document.getElementById('iconSelect').addEventListener('change', function() {
+    const icon = this.value;
+    document.getElementById('iconPreview').className = 'bi ' + icon;
+    document.querySelector('.preview-icon i').className = 'bi ' + icon;
+});
+
+// Live preview updates
+document.querySelector('input[name="title"]').addEventListener('input', function() {
+    document.getElementById('previewTitle').textContent = this.value || 'Program Title';
+});
+
+document.querySelector('select[name="day"]').addEventListener('change', function() {
+    document.getElementById('previewDay').textContent = this.value || 'Monday';
+});
+
+document.querySelector('input[name="start_time"]').addEventListener('input', function() {
+    updateTimePreview();
+});
+
+document.querySelector('input[name="end_time"]').addEventListener('input', function() {
+    updateTimePreview();
+});
+
+function updateTimePreview() {
+    const start = document.querySelector('input[name="start_time"]').value || '00:00';
+    const end = document.querySelector('input[name="end_time"]').value || '00:00';
+    document.getElementById('previewTime').textContent = formatTime(start) + ' - ' + formatTime(end);
+}
+
+function formatTime(time) {
+    if (!time) return '00:00';
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+}
+</script>
+
+<style>
+.icon-preview {
+    background: var(--primary);
+    color: var(--accent);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-top: 10px;
+}
+
+.program-preview {
+    background: var(--light);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.preview-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 1.5rem;
+}
+</style>
+{% endblock %}

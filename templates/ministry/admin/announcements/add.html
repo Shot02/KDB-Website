@@ -1,0 +1,202 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Add Announcement{% endblock %}
+
+{% block page_title %}Add New Announcement{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-megaphone me-2"></i>Add New Announcement</h3>
+                <a href="{% url 'ministry_admin:announcement_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Announcements
+                </a>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" class="mt-4" id="announcementForm">
+                {% csrf_token %}
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Title <span class="text-danger">*</span></label>
+                    <input type="text" name="title" class="form-control-admin" 
+                           placeholder="e.g., Crusade 2024, Easter Conference" required>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Description <span class="text-danger">*</span></label>
+                    <textarea name="description" class="form-control-admin" rows="4" 
+                              placeholder="Full details about the announcement..." required></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Event Date <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="date" class="form-control-admin" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Status</label>
+                            <div class="form-check mt-2">
+                                <input type="checkbox" name="is_active" class="form-check-input" 
+                                       id="is_active" checked>
+                                <label class="form-check-label" for="is_active">Active (visible on site)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Event Image</label>
+                            <div class="file-upload">
+                                <input type="file" name="image" id="imageUpload" accept="image/*"
+                                       onchange="previewImage(this, 'imagePreview')">
+                                <label for="imageUpload" class="file-upload-label">
+                                    <i class="bi bi-cloud-upload"></i> Choose Image
+                                </label>
+                                <span class="ms-2" id="imageFileName">No file chosen</span>
+                            </div>
+                            <div class="form-text">JPG/PNG, max 5MB</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Flyer/PDF File</label>
+                            <div class="file-upload">
+                                <input type="file" name="file" id="fileUpload">
+                                <label for="fileUpload" class="file-upload-label">
+                                    <i class="bi bi-file-earmark-pdf"></i> Choose File
+                                </label>
+                                <span class="ms-2" id="fileFileName">No file chosen</span>
+                            </div>
+                            <div class="form-text">PDF or image, max 10MB</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-admin-primary">
+                        <i class="bi bi-save"></i> Create Announcement
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary ms-2">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-image"></i> Image Preview</h3>
+            </div>
+            <div class="text-center">
+                <div id="imagePreviewContainer" style="display: none;">
+                    <img id="imagePreview" class="img-fluid rounded mb-2" style="max-height: 150px;">
+                </div>
+                <div id="noImagePreview" class="py-4">
+                    <i class="bi bi-image" style="font-size: 3rem; color: #ccc;"></i>
+                    <p class="text-muted mt-2">No image selected</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-calendar-event"></i> Preview Card</h3>
+            </div>
+            <div class="announcement-preview p-3" id="livePreview">
+                <p class="text-primary small mb-1">
+                    <i class="bi bi-calendar"></i> <span id="previewDate">Select a date</span>
+                </p>
+                <h6 id="previewTitle">Announcement Title</h6>
+                <p class="small text-muted" id="previewDescription">Description will appear here</p>
+                <span class="badge bg-warning" id="previewFile" style="display: none;">Has Flyer</span>
+            </div>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-lightbulb"></i> Tips</h3>
+            </div>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-check text-success"></i> Use eye-catching titles</li>
+                <li class="mb-2"><i class="bi bi-check text-success"></i> Include all event details</li>
+                <li class="mb-2"><i class="bi bi-check text-success"></i> Upload high-quality images</li>
+                <li class="mb-2"><i class="bi bi-check text-success"></i> PDF flyers can be downloaded</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+// File name displays
+document.getElementById('imageUpload').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+    document.getElementById('imageFileName').textContent = fileName;
+    
+    if (e.target.files[0]) {
+        document.getElementById('previewFile').style.display = 'inline-block';
+    }
+});
+
+document.getElementById('fileUpload').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+    document.getElementById('fileFileName').textContent = fileName;
+    document.getElementById('previewFile').style.display = 'inline-block';
+});
+
+// Live preview updates
+document.querySelector('input[name="title"]').addEventListener('input', function() {
+    document.getElementById('previewTitle').textContent = this.value || 'Announcement Title';
+});
+
+document.querySelector('textarea[name="description"]').addEventListener('input', function() {
+    document.getElementById('previewDescription').textContent = this.value || 'Description will appear here';
+});
+
+document.querySelector('input[name="date"]').addEventListener('input', function() {
+    const date = this.value;
+    if (date) {
+        const d = new Date(date);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('previewDate').textContent = d.toLocaleDateString(undefined, options);
+    } else {
+        document.getElementById('previewDate').textContent = 'Select a date';
+    }
+});
+
+// Image preview override
+function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const preview = document.getElementById(previewId);
+            preview.src = e.target.result;
+            document.getElementById('imagePreviewContainer').style.display = 'block';
+            document.getElementById('noImagePreview').style.display = 'none';
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+
+<style>
+.announcement-preview {
+    background: var(--light);
+    border-radius: 10px;
+    border-left: 4px solid var(--primary);
+}
+</style>
+{% endblock %}

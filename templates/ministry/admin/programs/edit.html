@@ -1,0 +1,223 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Edit Program{% endblock %}
+
+{% block page_title %}Edit Program: {{ program.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-pencil-square me-2"></i>Edit Program</h3>
+                <a href="{% url 'ministry_admin:program_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Programs
+                </a>
+            </div>
+            
+            <form method="post" class="mt-4" id="programForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Day <span class="text-danger">*</span></label>
+                            <select name="day" class="form-control-admin" required>
+                                <option value="">Select Day</option>
+                                <option value="Monday" {% if program.day == 'Monday' %}selected{% endif %}>Monday</option>
+                                <option value="Tuesday" {% if program.day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                                <option value="Wednesday" {% if program.day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                                <option value="Thursday" {% if program.day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                                <option value="Friday" {% if program.day == 'Friday' %}selected{% endif %}>Friday</option>
+                                <option value="Saturday" {% if program.day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                                <option value="Sunday" {% if program.day == 'Sunday' %}selected{% endif %}>Sunday</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Order</label>
+                            <input type="number" name="order" class="form-control-admin" 
+                                   value="{{ program.order }}" min="0">
+                            <div class="form-text">Display order (lower numbers appear first)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Program Title <span class="text-danger">*</span></label>
+                    <input type="text" name="title" class="form-control-admin" 
+                           value="{{ program.title }}" required>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Start Time <span class="text-danger">*</span></label>
+                            <input type="time" name="start_time" class="form-control-admin" 
+                                   value="{{ program.start_time|time:'H:i' }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">End Time <span class="text-danger">*</span></label>
+                            <input type="time" name="end_time" class="form-control-admin" 
+                                   value="{{ program.end_time|time:'H:i' }}" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control-admin" rows="3">{{ program.description }}</textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Icon</label>
+                            <select name="icon" class="form-control-admin select2" id="iconSelect">
+                                <option value="bi-book" {% if program.icon == 'bi-book' %}selected{% endif %}>Book</option>
+                                <option value="bi-journal-bookmark" {% if program.icon == 'bi-journal-bookmark' %}selected{% endif %}>Journal</option>
+                                <option value="bi-mortarboard" {% if program.icon == 'bi-mortarboard' %}selected{% endif %}>Mortarboard</option>
+                                <option value="bi-person-workspace" {% if program.icon == 'bi-person-workspace' %}selected{% endif %}>Workspace</option>
+                                <option value="bi-building" {% if program.icon == 'bi-building' %}selected{% endif %}>Building</option>
+                                <option value="bi-mic" {% if program.icon == 'bi-mic' %}selected{% endif %}>Mic</option>
+                                <option value="bi-music-note" {% if program.icon == 'bi-music-note' %}selected{% endif %}>Music</option>
+                                <option value="bi-cup-hot" {% if program.icon == 'bi-cup-hot' %}selected{% endif %}>Cup</option>
+                                <option value="bi-people" {% if program.icon == 'bi-people' %}selected{% endif %}>People</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Icon Preview</label>
+                            <div class="icon-preview">
+                                <i class="bi {{ program.icon }}" id="iconPreview"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-admin-primary">
+                        <i class="bi bi-save"></i> Update Program
+                    </button>
+                    <a href="{% url 'ministry_admin:program_list' %}" class="btn btn-outline-secondary ms-2">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-calendar-check"></i> Current Schedule</h3>
+            </div>
+            <div class="program-preview p-3">
+                <div class="text-center">
+                    <div class="preview-icon mb-2">
+                        <i class="bi {{ program.icon }}"></i>
+                    </div>
+                    <h5>{{ program.title }}</h5>
+                    <p class="text-primary">{{ program.day }}</p>
+                    <p class="badge bg-primary">
+                        {{ program.start_time|time:"g:i A" }} - {{ program.end_time|time:"g:i A" }}
+                    </p>
+                    {% if program.description %}
+                    <p class="small text-muted mt-2">{{ program.description|truncatechars:50 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-clock-history"></i> Program Info</h3>
+            </div>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-calendar-week me-2 text-primary"></i> Day: {{ program.day }}</li>
+                <li class="mb-2"><i class="bi bi-clock me-2 text-success"></i> Time: {{ program.start_time|time:"g:i A" }} - {{ program.end_time|time:"g:i A" }}</li>
+                <li class="mb-2"><i class="bi bi-sort-numeric-up me-2 text-info"></i> Order: {{ program.order }}</li>
+                <li class="mb-2"><i class="bi bi-tag me-2 text-warning"></i> Icon: {{ program.icon }}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+// Icon preview
+document.getElementById('iconSelect').addEventListener('change', function() {
+    const icon = this.value;
+    document.getElementById('iconPreview').className = 'bi ' + icon;
+    document.querySelector('.preview-icon i').className = 'bi ' + icon;
+});
+
+// Live preview updates (optional)
+document.querySelector('input[name="title"]').addEventListener('input', function() {
+    document.querySelector('.program-preview h5').textContent = this.value || '{{ program.title }}';
+});
+
+document.querySelector('select[name="day"]').addEventListener('change', function() {
+    document.querySelector('.program-preview .text-primary').textContent = this.value || '{{ program.day }}';
+});
+
+document.querySelector('input[name="start_time"]').addEventListener('input', updateTime);
+document.querySelector('input[name="end_time"]').addEventListener('input', updateTime);
+
+function updateTime() {
+    const start = document.querySelector('input[name="start_time"]').value || '{{ program.start_time|time:"H:i" }}';
+    const end = document.querySelector('input[name="end_time"]').value || '{{ program.end_time|time:"H:i" }}';
+    document.querySelector('.program-preview .badge').textContent = formatTime(start) + ' - ' + formatTime(end);
+}
+
+function formatTime(time) {
+    if (!time) return '00:00';
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+}
+</script>
+
+<style>
+.icon-preview {
+    background: var(--primary);
+    color: var(--accent);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-top: 10px;
+}
+
+.program-preview {
+    background: var(--light);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.preview-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 1.5rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Edit Team Member{% endblock %}
+
+{% block page_title %}Edit Team Member: {{ member.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-pencil-square me-2"></i>Edit Team Member</h3>
+                <a href="{% url 'ministry_admin:team_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Team
+                </a>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control-admin" 
+                                   value="{{ member.name }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Position <span class="text-danger">*</span></label>
+                            <input type="text" name="position" class="form-control-admin" 
+                                   value="{{ member.position }}" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Order</label>
+                    <input type="number" name="order" class="form-control-admin" 
+                           value="{{ member.order }}" min="0">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Photo</label>
+                    <input type="file" name="photo" class="form-control" accept="image/*"
+                           onchange="previewImage(this, 'photoPreview')">
+                    <div class="form-text">Recommended: Square image, max 2MB</div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-admin-primary">
+                        <i class="bi bi-save"></i> Update Member
+                    </button>
+                    <a href="{% url 'ministry_admin:team_list' %}" class="btn btn-outline-secondary ms-2">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-image"></i> Current Photo</h3>
+            </div>
+            <div class="text-center">
+                {% if member.photo %}
+                <img src="{{ member.photo.url }}" class="img-fluid rounded-circle mb-3" 
+                     style="width: 150px; height: 150px; object-fit: cover;">
+                <p class="small text-muted">Current photo</p>
+                {% else %}
+                <div class="no-photo-placeholder py-4">
+                    <i class="bi bi-person-fill" style="font-size: 4rem; color: #ccc;"></i>
+                    <p class="mt-2 text-muted">No photo uploaded</p>
+                </div>
+                {% endif %}
+                
+                <div id="photoPreviewContainer" style="display: none;" class="mt-3">
+                    <h6>New Photo Preview:</h6>
+                    <img id="photoPreview" class="img-fluid rounded-circle" 
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-info-circle"></i> Preview Card</h3>
+            </div>
+            <div class="team-preview-card text-center p-3">
+                <div class="preview-avatar mb-2">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <h5>{{ member.name }}</h5>
+                <p class="text-muted small">{{ member.position }}</p>
+                <span class="badge bg-secondary">Order: {{ member.order }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.team-preview-card {
+    background: var(--light);
+    border-radius: 10px;
+}
+
+.preview-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 2rem;
+}
+</style>
+{% endblock %}

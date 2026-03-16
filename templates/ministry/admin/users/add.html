@@ -1,0 +1,197 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Add New User{% endblock %}
+
+{% block page_title %}Add New Admin User{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3><i class="bi bi-person-plus me-2"></i>Add New Admin User</h3>
+        <a href="{% url 'ministry_admin:user_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Users
+        </a>
+    </div>
+    
+    <form method="post" class="mt-4" onsubmit="return validateForm('userForm')" id="userForm">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">
+                        Username <span class="text-danger">*</span>
+                        <i class="bi bi-question-circle tooltip-icon" data-bs-toggle="tooltip" title="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."></i>
+                    </label>
+                    <input type="text" name="username" class="form-control-admin" required 
+                           pattern="[a-zA-Z0-9@.+-_]+" title="Only letters, numbers, and @/./+/-/_ characters">
+                    <div class="form-text">Required. 150 characters or fewer.</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" name="email" class="form-control-admin" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" name="first_name" class="form-control-admin">
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" name="last_name" class="form-control-admin">
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" class="form-control-admin" required 
+                               minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">Minimum 8 characters with at least one uppercase, one lowercase, and one number.</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control-admin" required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirm_password')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="is_staff" class="form-check-input" id="is_staff" checked>
+                    <label class="form-check-label fw-bold" for="is_staff">
+                        Staff Status
+                        <i class="bi bi-question-circle tooltip-icon" data-bs-toggle="tooltip" title="Can access admin dashboard"></i>
+                    </label>
+                    <div class="form-text">Grants access to the admin dashboard</div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="is_superuser" class="form-check-input" id="is_superuser">
+                    <label class="form-check-label fw-bold" for="is_superuser">
+                        Superuser Status
+                        <i class="bi bi-question-circle tooltip-icon" data-bs-toggle="tooltip" title="Full access - can manage other admins"></i>
+                    </label>
+                    <div class="form-text">Can manage other admin users</div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="is_active" class="form-check-input" id="is_active" checked>
+                    <label class="form-check-label fw-bold" for="is_active">Active Status</label>
+                    <div class="form-text">User can login</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Password Strength Meter -->
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <div class="password-strength-meter">
+                    <div class="progress" style="height: 5px;">
+                        <div class="progress-bar" id="passwordStrength" style="width: 0%;"></div>
+                    </div>
+                    <small class="text-muted" id="passwordStrengthText">Password strength: None</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Note:</strong> Staff users can manage website content. Superusers can also manage other admin users.
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-admin-primary">
+                <i class="bi bi-save"></i> Create User
+            </button>
+            <a href="{% url 'ministry_admin:user_list' %}" class="btn btn-outline-secondary ms-2">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+    field.setAttribute('type', type);
+}
+
+// Password strength checker
+document.getElementById('password').addEventListener('input', function() {
+    const password = this.value;
+    const strengthBar = document.getElementById('passwordStrength');
+    const strengthText = document.getElementById('passwordStrengthText');
+    
+    let strength = 0;
+    if (password.match(/[a-z]+/)) strength++;
+    if (password.match(/[A-Z]+/)) strength++;
+    if (password.match(/[0-9]+/)) strength++;
+    if (password.match(/[$@#&!]+/)) strength++;
+    if (password.length >= 8) strength++;
+    
+    const width = (strength / 5) * 100;
+    strengthBar.style.width = width + '%';
+    
+    if (width < 40) {
+        strengthBar.className = 'progress-bar bg-danger';
+        strengthText.innerHTML = 'Password strength: Weak';
+    } else if (width < 70) {
+        strengthBar.className = 'progress-bar bg-warning';
+        strengthText.innerHTML = 'Password strength: Medium';
+    } else {
+        strengthBar.className = 'progress-bar bg-success';
+        strengthText.innerHTML = 'Password strength: Strong';
+    }
+});
+
+// Form validation
+function validateForm(formId) {
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    
+    if (password !== confirm) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Password Mismatch',
+            text: 'Passwords do not match!'
+        });
+        return false;
+    }
+    
+    return true;
+}
+</script>
+{% endblock %}

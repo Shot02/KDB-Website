@@ -1,0 +1,667 @@
+{% extends 'ministry/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section with Video Background -->
+<section id="home" class="hero-section position-relative overflow-hidden">
+    <!-- Video Background -->
+    {% if hero_background_video %}
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="{{ hero_background_video.video.url }}" type="video/mp4">
+    </video>
+    {% elif hero.background_video %}
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="{{ hero.background_video.url }}" type="video/mp4">
+    </video>
+    {% else %}
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="{% static 'video/background.mp4' %}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    {% endif %}
+    
+    <!-- Dark Overlay -->
+    <div class="hero-overlay"></div>
+    
+    <div class="container position-relative z-3 h-100">
+        <div class="row h-100">
+            <div class="col-12 d-flex flex-column justify-content-center align-items-center text-center text-white" style="min-height: 100vh;">
+                <h1 class="display-1 fw-bold mb-3" data-aos="fade-up">
+                    <span class="text-warning">KDB</span>
+                </h1>
+                <h2 class="display-4 fw-bold mb-4" data-aos="fade-up" data-aos-delay="100">
+                    Kingdom Disciples Builders
+                </h2>
+                
+                <div class="d-flex flex-wrap gap-3 mb-4 justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                    <span class="badge bg-warning text-dark px-4 py-2 fs-6 rounded-pill">
+                        <i class="bi bi-building me-2"></i>RC. {{ site_settings.registration_number|default:"2614946" }}
+                    </span>
+                    <span class="badge bg-warning text-dark px-4 py-2 fs-6 rounded-pill">
+                        <i class="bi bi-building me-2"></i>CAN {{ site_settings.can_number|default:"0294" }}
+                    </span>
+                </div>
+                
+                <p class="lead mb-5 mx-auto" style="max-width: 700px; font-size: 1.3rem;" data-aos="fade-up" data-aos-delay="300">
+                    {{ hero.description|default:"We reach the unreached and take the light of the gospel to rural areas. Training ministers in the function of their ministerial assignment, bringing revival in church and among ministers." }}
+                </p>
+                
+                <div class="d-flex flex-wrap gap-3 justify-content-center" data-aos="fade-up" data-aos-delay="400">
+                    <a href="#pillars" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill">
+                        <i class="bi bi-award-fill me-2"></i>Explore Our Pillars
+                    </a>
+                    <a href="#contact" class="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill">
+                        <i class="bi bi-envelope-fill me-2"></i>Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll Down Indicator -->
+    <div class="scroll-down position-absolute bottom-0 start-50 translate-middle-x mb-4">
+        <a href="#pillars" class="text-white">
+            <i class="bi bi-chevron-double-down fs-2"></i>
+        </a>
+    </div>
+</section>
+
+<!-- Five Pillars Section -->
+<section id="pillars" class="section-padding pillars-section">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">Our Five Pillars</h2>
+            <p class="lead">The foundation of KDB OTTO OUTREACH Ministry</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for pillar in pillars %}
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <div class="pillar-card h-100">
+                    <div class="pillar-icon">
+                        <i class="bi {{ pillar.icon }}"></i>
+                    </div>
+                    <span class="pillar-acronym">{{ pillar.acronym }}</span>
+                    <h3>{{ pillar.title }}</h3>
+                    <p>{{ pillar.description }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Default pillars if none in database -->
+            <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                <div class="pillar-card">
+                    <div class="pillar-icon">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                    <span class="pillar-acronym">LEP</span>
+                    <h3>Leadership Empowerment Program</h3>
+                    <p>We organize ministers seminars, workshops to build and empower leaders</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="pillar-card">
+                    <div class="pillar-icon">
+                        <i class="bi bi-megaphone-fill"></i>
+                    </div>
+                    <span class="pillar-acronym">EBO</span>
+                    <h3>Evangelism by Objective</h3>
+                    <p>We train and rebuild the church membership into soul winning evangelism</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="pillar-card">
+                    <div class="pillar-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <span class="pillar-acronym">DF</span>
+                    <h3>Discipleship Forum</h3>
+                    <p>We build up bible based disciples that can provoke revival in their communities</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="pillar-card">
+                    <div class="pillar-icon">
+                        <i class="bi bi-globe"></i>
+                    </div>
+                    <span class="pillar-acronym">ISL</span>
+                    <h3>Int'l School of Leadership</h3>
+                    <p>Training and modeling ministers of God in their ministerial assignment</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section id="mission" class="section-padding mission-section">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold text-white">Our Mission</h2>
+            <p class="lead text-white-50">{{ site_settings.mission_statement|truncatechars:100 }}</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for mission in missions %}
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <div class="mission-box text-center">
+                    <div class="mission-icon">
+                        <i class="bi {{ mission.icon }}"></i>
+                    </div>
+                    <h4>{{ mission.title }}</h4>
+                    <p>{{ mission.description }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="mission-box text-center">
+                    <div class="mission-icon">
+                        <i class="bi bi-heart-fill"></i>
+                    </div>
+                    <h4>Reach the Unreached</h4>
+                    <p>We reach the unreached and take the light of the gospel to rural areas</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="mission-box text-center">
+                    <div class="mission-icon">
+                        <i class="bi bi-book-fill"></i>
+                    </div>
+                    <h4>Train Ministers</h4>
+                    <p>Training ministers in the function of their ministerial assignment</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="mission-box text-center">
+                    <div class="mission-icon">
+                        <i class="bi bi-fire"></i>
+                    </div>
+                    <h4>Bring Revival</h4>
+                    <p>Provoke revival in the church through effective evangelism</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Weekly Programs Section -->
+<section id="programs" class="section-padding programs-section">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">Weekly Programs</h2>
+            <p class="lead">Join us in our regular activities</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for program in programs %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'50' }}">
+                <div class="program-card">
+                    <div class="program-time">
+                        <span class="day">{{ program.day }}</span>
+                        <span class="time">{{ program.start_time|time:"g:i A" }} - {{ program.end_time|time:"g:i A" }}</span>
+                    </div>
+                    <div class="program-icon">
+                        <i class="bi {{ program.icon }}"></i>
+                    </div>
+                    <h4>{{ program.title }}</h4>
+                    <p>{{ program.description }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Default programs -->
+            <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                <div class="program-card">
+                    <div class="program-time">
+                        <span class="day">Monday</span>
+                        <span class="time">2:00 PM - 4:00 PM</span>
+                    </div>
+                    <div class="program-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h4>Bible Teaching</h4>
+                    <p>Deep dive into God's Word with comprehensive Bible study</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="program-card">
+                    <div class="program-time">
+                        <span class="day">Tuesday</span>
+                        <span class="time">4:00 PM - 6:00 PM</span>
+                    </div>
+                    <div class="program-icon">
+                        <i class="bi bi-journal-bookmark"></i>
+                    </div>
+                    <h4>Bible Education</h4>
+                    <p>In-depth scriptural exploration and study</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="program-card">
+                    <div class="program-time">
+                        <span class="day">Thursday</span>
+                        <span class="time">4:00 PM - 6:00 PM</span>
+                    </div>
+                    <div class="program-icon">
+                        <i class="bi bi-journal-bookmark"></i>
+                    </div>
+                    <h4>Bible Education</h4>
+                    <p>Continuing spiritual education</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="program-card">
+                    <div class="program-time">
+                        <span class="day">Friday</span>
+                        <span class="time">4:00 PM - 6:00 PM</span>
+                    </div>
+                    <div class="program-icon">
+                        <i class="bi bi-mortarboard"></i>
+                    </div>
+                    <h4>ISL Training Class</h4>
+                    <p>International School of Leadership training</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="program-card">
+                    <div class="program-time">
+                        <span class="day">Saturday</span>
+                        <span class="time">9:00 AM - 12:00 PM</span>
+                    </div>
+                    <div class="program-icon">
+                        <i class="bi bi-person-workspace"></i>
+                    </div>
+                    <h4>ISL Training Class</h4>
+                    <p>Weekend leadership development</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="program-card">
+                    <div class="program-time">
+                        <span class="day">Sunday</span>
+                        <span class="time">7:30 AM - 11:00 AM</span>
+                    </div>
+                    <div class="program-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h4>Sunday Service</h4>
+                    <p>Weekly worship service for the congregation</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section id="team" class="section-padding team-section">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">Our Leadership Team</h2>
+            <p class="lead">Dedicated servants of God leading our ministry</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for member in team_members %}
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'50' }}">
+                <div class="team-card">
+                    <div class="team-img">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" alt="{{ member.name }}">
+                        {% else %}
+                        <i class="bi bi-person-fill"></i>
+                        {% endif %}
+                    </div>
+                    <div class="team-info">
+                        <h4>{{ member.name }}</h4>
+                        <span class="position">{{ member.position }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- KDB OTTO OUTREACH Family Section -->
+        <div class="row mt-5" data-aos="fade-up">
+            <div class="col-12">
+                <div class="family-photo-card">
+                    <div class="family-photo-header text-center mb-4">
+                        <h3 class="display-5 fw-bold text-primary">KDB OTTO OUTREACH Family</h3>
+                        <p class="lead">All Members - United in Christ</p>
+                    </div>
+                    
+                    {% for group in group_photos %}
+                    <div class="family-photo-img">
+                        {% if group.photo %}
+                        <img src="{{ group.photo.url }}" alt="{{ group.title }}" class="img-fluid rounded-3 shadow">
+                        {% else %}
+                        <div class="family-photo-placeholder text-center py-5 bg-light rounded-3">
+                            <i class="bi bi-people-fill" style="font-size: 5rem; color: var(--primary);"></i>
+                            <h4 class="mt-3">{{ group.title|default:"KDB OTTO OUTREACH Family" }}</h4>
+                            <p class="text-muted">{{ group.caption|default:"All Members" }}</p>
+                            <p class="small text-muted mt-3">Upload a group photo in the admin panel</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="family-photo-placeholder text-center py-5 bg-light rounded-3">
+                        <i class="bi bi-people-fill" style="font-size: 5rem; color: var(--primary);"></i>
+                        <h4 class="mt-3">KDB OTTO OUTREACH Family</h4>
+                        <p class="text-muted">All Members</p>
+                        <p class="small text-muted mt-3">Upload a group photo in the admin panel</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Presiding Leader Section -->
+{% if leader %}
+<section id="leader" class="section-padding leader-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5" data-aos="fade-right">
+                <div class="leader-img">
+                    {% if leader.photo %}
+                    <img src="{{ leader.photo.url }}" alt="{{ leader.name }}">
+                    {% else %}
+                    <i class="bi bi-person-fill"></i>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-7" data-aos="fade-left">
+                <div class="leader-content">
+                    <h2>{{ leader.name }}</h2>
+                    <span class="leader-title">{{ leader.title }}</span>
+                    <div class="leader-bio">
+                        {{ leader.bio|linebreaks }}
+                    </div>
+                    <div class="mt-4">
+                        <a href="#contact" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill">
+                            Get in Touch
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Gallery Section with Video Support -->
+<section id="gallery" class="section-padding gallery-section">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">Media Gallery</h2>
+            <p class="lead">Capturing moments from our outreach programs</p>
+            {% if gallery_count %}
+            <span class="badge bg-primary">{{ gallery_count }} items</span>
+            {% endif %}
+        </div>
+        
+        <!-- Gallery Filters -->
+        <div class="gallery-filters text-center mb-4" data-aos="fade-up">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="image">Images</button>
+            <button class="filter-btn" data-filter="video">Videos</button>
+            <button class="filter-btn" data-filter="flyer">Flyers</button>
+        </div>
+        
+        <!-- Gallery Grid -->
+        <div class="row g-4 gallery-grid">
+            {% for item in gallery_items %}
+            <div class="col-md-4 col-lg-3 gallery-item" data-type="{{ item.media_type }}" data-aos="fade-up">
+                <div class="gallery-card">
+                    {% if item.media_type == 'video' %}
+                        <!-- Video Thumbnail -->
+                        <div class="gallery-media video-thumbnail" onclick="playVideo('{{ item.file.url }}')">
+                            {% if item.thumbnail %}
+                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}" class="img-fluid">
+                            {% else %}
+                                <video src="{{ item.file.url }}" preload="metadata" class="img-fluid"></video>
+                            {% endif %}
+                            <div class="play-button">
+                                <i class="bi bi-play-circle-fill"></i>
+                            </div>
+                        </div>
+                    {% elif item.media_type == 'flyer' %}
+                        <!-- Flyer/Poster -->
+                        <a href="{{ item.file.url }}" target="_blank" class="gallery-media">
+                            {% if item.file.url|lower|slice:'-4:' == '.pdf' %}
+                                <div class="pdf-thumbnail">
+                                    <i class="bi bi-file-pdf"></i>
+                                    <span>PDF Flyer</span>
+                                </div>
+                            {% else %}
+                                <img src="{{ item.file.url }}" alt="{{ item.title }}" class="img-fluid">
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <!-- Image -->
+                        <a href="{{ item.file.url }}" data-lightbox="gallery" data-title="{{ item.title }}" class="gallery-media">
+                            <img src="{{ item.file.url }}" alt="{{ item.title }}" class="img-fluid">
+                        </a>
+                    {% endif %}
+                    
+                    <div class="gallery-caption">
+                        <h5>{{ item.title }}</h5>
+                        {% if item.description %}
+                        <p>{{ item.description|truncatechars:50 }}</p>
+                        {% endif %}
+                        <span class="media-type-badge">{{ item.media_type|title }}</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-images" style="font-size: 4rem; color: #ccc;"></i>
+                <h4 class="mt-3">No Gallery Items Yet</h4>
+                <p class="text-muted">Check back soon for photos and videos from our outreach programs.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Video Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white">Video Player</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <video id="modalVideo" controls class="w-100" style="max-height: 70vh;">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Announcements Section (for flyers/events) -->
+<section id="announcements" class="section-padding announcements-section">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">Announcements & Events</h2>
+            <p class="lead">Stay updated with our latest news and events</p>
+        </div>
+        
+        <div class="row">
+            {% for announcement in announcements %}
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up">
+                <div class="announcement-card">
+                    {% if announcement.image %}
+                    <img src="{{ announcement.image.url }}" class="announcement-img" alt="{{ announcement.title }}">
+                    {% endif %}
+                    <div class="announcement-content">
+                        <div class="announcement-date">
+                            <i class="bi bi-calendar"></i> {{ announcement.date|date:"F j, Y" }}
+                        </div>
+                        <h4>{{ announcement.title }}</h4>
+                        <p>{{ announcement.description|truncatechars:100 }}</p>
+                        <a href="{{ announcement.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <i class="bi bi-download"></i> Download Flyer
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No announcements at this time.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="section-padding contact-section">
+    <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">Contact Us</h2>
+            <p class="lead">Get in touch with KDB OTTO OUTREACH</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="bi bi-whatsapp"></i>
+                    </div>
+                    <h4>WhatsApp</h4>
+                    <p>Connect with us on WhatsApp</p>
+                    {% if site_settings.whatsapp_numbers %}
+                        {% for number in site_settings.whatsapp_numbers %}
+                        <a href="https://wa.me/{{ number|cut:' ' }}" target="_blank" class="contact-link">{{ number }}</a><br>
+                        {% endfor %}
+                    {% else %}
+                        <a href="https://wa.me/2348052602905" target="_blank" class="contact-link">0805 260 2905</a><br>
+                        <a href="https://wa.me/2348060379587" target="_blank" class="contact-link">0806 037 9587</a><br>
+                        <a href="https://wa.me/2349044000736" target="_blank" class="contact-link">0904 400 0736</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <h4>Email</h4>
+                    <p>Send us an email</p>
+                    <a href="mailto:{{ site_settings.email|default:'revottop@gmail.com' }}" class="contact-link">
+                        {{ site_settings.email|default:'revottop@gmail.com' }}
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <h4>Location</h4>
+                    <p>KDB OTTO OUTREACH Ministry</p>
+                    <span class="contact-link">{{ site_settings.location|default:'Nigeria' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Support Section -->
+<section id="support" class="section-padding support-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <div class="support-box">
+                    <i class="bi bi-heart-fill"></i>
+                    <h3>Support Our Ministry</h3>
+                    <p>Your generous donations help us reach more communities, train more ministers, and spread the gospel to rural areas. Every contribution makes a difference.</p>
+                    
+                    <div class="bank-details">
+                        <h5><i class="bi bi-bank"></i> Bank Account Details</h5>
+                        <div class="bank-detail-item">
+                            <span>Bank Name</span>
+                            <span class="fw-bold">{{ site_settings.bank_name|default:'UBA' }}</span>
+                        </div>
+                        <div class="bank-detail-item">
+                            <span>Account Number</span>
+                            <span class="fw-bold">{{ site_settings.account_number|default:'2191091914' }}</span>
+                        </div>
+                        <div class="bank-detail-item">
+                            <span>Account Name</span>
+                            <span class="fw-bold">{{ site_settings.account_name|default:'KDB OTTO OUTREACH' }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="#contact" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill">
+                            Contact for Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Video Modal Script -->
+<script>
+function playVideo(videoUrl) {
+    const modal = new bootstrap.Modal(document.getElementById('videoModal'));
+    const video = document.getElementById('modalVideo');
+    video.src = videoUrl;
+    modal.show();
+    
+    // Stop video when modal is closed
+    document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
+        video.pause();
+        video.src = '';
+    });
+}
+
+
+// Gallery filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            galleryItems.forEach(item => {
+                if (filter === 'all' || item.dataset.type === filter) {
+                    item.style.display = 'block';
+                    // Add animation
+                    item.style.animation = 'fadeIn 0.5s';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+
+// Add fade animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

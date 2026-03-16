@@ -1,0 +1,285 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block page_subtitle %}
+<p>Welcome back, {{ user.get_full_name|default:user.username }}! Here's what's happening with your ministry.</p>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards Row 1 -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-award"></i>
+            </div>
+            <h3 class="stat-number">{{ total_pillars|default:'0' }}</h3>
+            <p class="stat-label">Total Pillars</p>
+            <div class="stat-trend">
+                <span class="trend-up"><i class="bi bi-arrow-up"></i> 5</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-calendar-week"></i>
+            </div>
+            <h3 class="stat-number">{{ total_programs|default:'0' }}</h3>
+            <p class="stat-label">Weekly Programs</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h3 class="stat-number">{{ total_team|default:'0' }}</h3>
+            <p class="stat-label">Team Members</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-images"></i>
+            </div>
+            <h3 class="stat-number">{{ total_gallery|default:'0' }}</h3>
+            <p class="stat-label">Gallery Items</p>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards Row 2 -->
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="stat-card bg-primary text-white">
+            <div class="stat-icon bg-white text-primary">
+                <i class="bi bi-megaphone"></i>
+            </div>
+            <h3 class="stat-number text-white">{{ total_announcements|default:'0' }}</h3>
+            <p class="stat-label text-white-50">Announcements</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card bg-info text-white">
+            <div class="stat-icon bg-white text-info">
+                <i class="bi bi-play-btn"></i>
+            </div>
+            <h3 class="stat-number text-white">{{ total_backgrounds|default:'0' }}</h3>
+            <p class="stat-label text-white-50">Hero Backgrounds</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card bg-success text-white">
+            <div class="stat-icon bg-white text-success">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <h3 class="stat-number text-white">{{ total_users|default:'0' }}</h3>
+            <p class="stat-label text-white-50">Total Users</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card bg-warning text-dark">
+            <div class="stat-icon bg-white text-warning">
+                <i class="bi bi-star-fill"></i>
+            </div>
+            <h3 class="stat-number text-dark">{{ superusers|default:'0' }}</h3>
+            <p class="stat-label text-dark-50">Superusers</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-lightning-charge"></i> Quick Actions</h3>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-2 col-6">
+                    <a href="{% url 'ministry_admin:pillar_add' %}" class="btn btn-admin-primary w-100 py-3">
+                        <i class="bi bi-plus-circle d-block fs-4 mb-2"></i>
+                        <small>Add Pillar</small>
+                    </a>
+                </div>
+                <div class="col-md-2 col-6">
+                    <a href="{% url 'ministry_admin:program_add' %}" class="btn btn-admin-primary w-100 py-3">
+                        <i class="bi bi-plus-circle d-block fs-4 mb-2"></i>
+                        <small>Add Program</small>
+                    </a>
+                </div>
+                <div class="col-md-2 col-6">
+                    <a href="{% url 'ministry_admin:team_add' %}" class="btn btn-admin-primary w-100 py-3">
+                        <i class="bi bi-plus-circle d-block fs-4 mb-2"></i>
+                        <small>Add Team Member</small>
+                    </a>
+                </div>
+                <div class="col-md-2 col-6">
+                    <a href="{% url 'ministry_admin:gallery_add' %}" class="btn btn-admin-primary w-100 py-3">
+                        <i class="bi bi-plus-circle d-block fs-4 mb-2"></i>
+                        <small>Add Gallery Item</small>
+                    </a>
+                </div>
+                <div class="col-md-2 col-6">
+                    <a href="{% url 'ministry_admin:announcement_add' %}" class="btn btn-admin-primary w-100 py-3">
+                        <i class="bi bi-plus-circle d-block fs-4 mb-2"></i>
+                        <small>Add Announcement</small>
+                    </a>
+                </div>
+                <div class="col-md-2 col-6">
+                    <a href="{% url 'ministry_admin:user_add' %}" class="btn btn-admin-success w-100 py-3">
+                        <i class="bi bi-person-plus d-block fs-4 mb-2"></i>
+                        <small>Add Admin User</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Recent Users -->
+    <div class="col-md-6">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-people"></i> Recent Admin Users</h3>
+                <a href="{% url 'ministry_admin:user_list' %}" class="btn btn-sm btn-admin-outline">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table-admin table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user_item in recent_users %}
+                        <tr>
+                            <td>
+                                <strong>{{ user_item.username }}</strong>
+                                {% if user_item.pk == request.user.pk %}
+                                    <span class="badge bg-info">You</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user_item.email }}</td>
+                            <td>
+                                {% if user_item.is_superuser %}
+                                    <span class="badge bg-warning">Superuser</span>
+                                {% elif user_item.is_staff %}
+                                    <span class="badge bg-success">Staff</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">User</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user_item.date_joined|date:'M d, Y' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3">No users found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Gallery Items -->
+    <div class="col-md-6">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-images"></i> Recent Gallery Items</h3>
+                <a href="{% url 'ministry_admin:gallery_list' %}" class="btn btn-sm btn-admin-outline">View All</a>
+            </div>
+            <div class="row g-2">
+                {% for item in recent_gallery %}
+                <div class="col-4">
+                    <div class="gallery-thumb">
+                        {% if item.media_type == 'video' %}
+                            <div class="position-relative">
+                                <img src="{% if item.thumbnail %}{{ item.thumbnail.url }}{% else %}{% static 'images/video-placeholder.jpg' %}{% endif %}" 
+                                     class="img-fluid rounded" alt="{{ item.title }}">
+                                <span class="position-absolute top-50 start-50 translate-middle text-white">
+                                    <i class="bi bi-play-circle-fill fs-3"></i>
+                                </span>
+                            </div>
+                        {% else %}
+                            <img src="{{ item.file.url }}" class="img-fluid rounded" alt="{{ item.title }}">
+                        {% endif %}
+                        <small class="d-block text-truncate mt-1">{{ item.title|truncatechars:15 }}</small>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-4">
+                    <i class="bi bi-image" style="font-size: 3rem; color: #ccc;"></i>
+                    <p class="mt-2">No gallery items yet</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Recent Announcements -->
+    <div class="col-md-12">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-megaphone"></i> Recent Announcements</h3>
+                <a href="{% url 'ministry_admin:announcement_list' %}" class="btn btn-sm btn-admin-outline">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table-admin table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for announcement in recent_announcements %}
+                        <tr>
+                            <td>{{ announcement.title }}</td>
+                            <td>{{ announcement.date|date:'M d, Y' }}</td>
+                            <td>
+                                {% if announcement.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'ministry_admin:announcement_edit' announcement.pk %}" 
+                                   class="btn btn-sm btn-admin-edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3">No announcements found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

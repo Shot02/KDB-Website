@@ -1,0 +1,272 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Media Gallery{% endblock %}
+
+{% block page_title %}Media Gallery Management{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-images"></i>
+            </div>
+            <h3 class="stat-number">{{ total_images|default:'0' }}</h3>
+            <p class="stat-label">Total Items</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-success text-white">
+            <div class="stat-icon bg-white text-success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <h3 class="stat-number text-white">{{ active_images|default:'0' }}</h3>
+            <p class="stat-label text-white-50">Active</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-secondary text-white">
+            <div class="stat-icon bg-white text-secondary">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <h3 class="stat-number text-white">{{ inactive_images|default:'0' }}</h3>
+            <p class="stat-label text-white-50">Inactive</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-info text-white">
+            <div class="stat-icon bg-white text-info">
+                <i class="bi bi-pie-chart"></i>
+            </div>
+            <h3 class="stat-number text-white">{{ image_count|default:'0' }} / {{ video_count|default:'0' }} / {{ flyer_count|default:'0' }}</h3>
+            <p class="stat-label text-white-50">Img / Vid / Flyer</p>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Card -->
+<div class="content-card">
+    <div class="card-header">
+        <h3><i class="bi bi-images me-2"></i>Gallery Items</h3>
+        <div class="d-flex gap-2">
+            <button class="btn btn-admin-outline" onclick="toggleFilters()">
+                <i class="bi bi-funnel"></i> Filter
+            </button>
+            <a href="{% url 'ministry_admin:gallery_add' %}" class="btn btn-admin-primary">
+                <i class="bi bi-plus-circle"></i> Add Media
+            </a>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters-panel mb-4 p-3 bg-light rounded" id="filtersPanel" style="display: none;">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Media Type</label>
+                <select name="type" class="form-select">
+                    <option value="all" {% if current_filters.type == 'all' %}selected{% endif %}>All Types</option>
+                    <option value="image" {% if current_filters.type == 'image' %}selected{% endif %}>Images Only</option>
+                    <option value="video" {% if current_filters.type == 'video' %}selected{% endif %}>Videos Only</option>
+                    <option value="flyer" {% if current_filters.type == 'flyer' %}selected{% endif %}>Flyers Only</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="all" {% if current_filters.status == 'all' %}selected{% endif %}>All Status</option>
+                    <option value="active" {% if current_filters.status == 'active' %}selected{% endif %}>Active Only</option>
+                    <option value="inactive" {% if current_filters.status == 'inactive' %}selected{% endif %}>Inactive Only</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Search by title..." 
+                       value="{{ current_filters.search }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-admin-primary w-100">
+                    <i class="bi bi-search"></i> Apply
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Gallery Grid -->
+    {% if images %}
+    <div class="row gallery-admin-grid">
+        {% for item in images %}
+        <div class="col-md-3 col-6 mb-4">
+            <div class="gallery-admin-card">
+                <div class="gallery-admin-thumb">
+                    {% if item.media_type == 'video' %}
+                        {% if item.thumbnail %}
+                            <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
+                        {% else %}
+                            <video src="{{ item.file.url }}" preload="metadata"></video>
+                        {% endif %}
+                        <span class="media-badge bg-info">
+                            <i class="bi bi-play-circle"></i> Video
+                        </span>
+                    {% elif item.media_type == 'flyer' %}
+                        {% if item.file.url|lower|slice:'-4:' == '.pdf' %}
+                            <div class="pdf-preview">
+                                <i class="bi bi-file-pdf" style="font-size: 3rem; color: #dc3545;"></i>
+                            </div>
+                        {% else %}
+                            <img src="{{ item.file.url }}" alt="{{ item.title }}">
+                        {% endif %}
+                        <span class="media-badge bg-warning">
+                            <i class="bi bi-file-earmark"></i> Flyer
+                        </span>
+                    {% else %}
+                        <img src="{{ item.file.url }}" alt="{{ item.title }}">
+                        <span class="media-badge bg-success">
+                            <i class="bi bi-image"></i> Image
+                        </span>
+                    {% endif %}
+                    
+                    {% if not item.is_active %}
+                    <div class="inactive-overlay">
+                        <span class="badge bg-secondary">Inactive</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="gallery-admin-info">
+                    <h6 title="{{ item.title }}">{{ item.title|truncatechars:25 }}</h6>
+                    <p class="text-muted small mb-2">
+                        <i class="bi bi-calendar"></i> {{ item.uploaded_at|date:"M d, Y" }}
+                    </p>
+                    <div class="btn-group w-100">
+                        <a href="{% url 'ministry_admin:gallery_edit' item.pk %}" 
+                           class="btn btn-sm btn-admin-edit">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a href="#" onclick="confirmDelete(event, '{{ item.title }}', '{% url 'ministry_admin:gallery_delete' item.pk %}')" 
+                           class="btn btn-sm btn-admin-delete">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                        <a href="{{ item.file.url }}" target="_blank" 
+                           class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-images" style="font-size: 4rem; color: #ccc;"></i>
+        <h4 class="mt-3">No Gallery Items Found</h4>
+        <p class="text-muted">Get started by adding your first image, video, or flyer.</p>
+        <a href="{% url 'ministry_admin:gallery_add' %}" class="btn btn-admin-primary mt-3">
+            <i class="bi bi-plus-circle"></i> Add Your First Media
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.gallery-admin-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+    height: 100%;
+    border: 1px solid #eee;
+}
+
+.gallery-admin-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.gallery-admin-thumb {
+    height: 180px;
+    position: relative;
+    background: #f8f9fa;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-admin-thumb img,
+.gallery-admin-thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-admin-thumb .pdf-preview {
+    text-align: center;
+    padding: 20px;
+}
+
+.media-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 3px 8px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    color: white;
+    z-index: 2;
+}
+
+.inactive-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.gallery-admin-info {
+    padding: 12px;
+    text-align: center;
+}
+
+.gallery-admin-info h6 {
+    color: var(--primary);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.gallery-admin-info .btn-group {
+    margin-top: 8px;
+}
+
+.btn-group .btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+
+.filters-panel {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+</style>
+
+<script>
+function toggleFilters() {
+    const panel = document.getElementById('filtersPanel');
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        panel.style.display = 'block';
+    } else {
+        panel.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block page_title %}Admin Users Management{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3><i class="bi bi-people-fill me-2"></i>All Admin Users</h3>
+        <div>
+            <a href="{% url 'ministry_admin:user_add' %}" class="btn btn-admin-primary me-2">
+                <i class="bi bi-plus-circle"></i> Add New User
+            </a>
+            <button class="btn btn-admin-outline" onclick="exportData('csv')">
+                <i class="bi bi-download"></i> Export
+            </button>
+        </div>
+    </div>
+    
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="d-flex">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" name="search" class="form-control border-start-0 ps-0" 
+                           placeholder="Search by username, email or name..." 
+                           value="{{ search_query }}">
+                    <button type="submit" class="btn btn-admin-primary">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?filter=all">All Users</a></li>
+                    <li><a class="dropdown-item" href="?filter=staff">Staff Only</a></li>
+                    <li><a class="dropdown-item" href="?filter=superuser">Superusers Only</a></li>
+                    <li><a class="dropdown-item" href="?filter=active">Active Only</a></li>
+                </ul>
+            </div>
+            <span class="text-muted ms-3">Total: <strong>{{ total_users }}</strong></span>
+        </div>
+    </div>
+    
+    <!-- Users Table -->
+    <div class="table-responsive">
+        <table class="table-admin table table-hover">
+            <thead>
+                <tr>
+                    <th width="30">
+                        <input type="checkbox" onclick="selectAll(this)">
+                    </th>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user_item in page_obj %}
+                <tr>
+                    <td>
+                        <input type="checkbox" class="select-item" value="{{ user_item.pk }}">
+                    </td>
+                    <td>#{{ user_item.id }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar-sm me-2">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <strong>{{ user_item.username }}</strong>
+                            {% if user_item.pk == request.user.pk %}
+                                <span class="badge bg-info ms-2">You</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>{{ user_item.get_full_name|default:'-' }}</td>
+                    <td>{{ user_item.email }}</td>
+                    <td>
+                        {% if user_item.is_superuser %}
+                            <span class="badge bg-warning text-dark">Super Admin</span>
+                        {% elif user_item.is_staff %}
+                            <span class="badge bg-success">Staff</span>
+                        {% else %}
+                            <span class="badge bg-secondary">User</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user_item.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user_item.last_login|date:'Y-m-d H:i'|default:'Never' }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{% url 'ministry_admin:user_edit' user_item.pk %}" 
+                               class="btn btn-sm btn-admin-edit" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            
+                            {% if user_item.pk != request.user.pk %}
+                                <a href="{% url 'ministry_admin:user_toggle_staff' user_item.pk %}" 
+                                   class="btn btn-sm btn-info" 
+                                   title="Toggle Staff Status"
+                                   onclick="return confirm('Toggle staff status for {{ user_item.username }}?')">
+                                    <i class="bi bi-shield"></i>
+                                </a>
+                                
+                                <a href="{% url 'ministry_admin:user_toggle_superuser' user_item.pk %}" 
+                                   class="btn btn-sm btn-warning" 
+                                   title="Toggle Superuser Status"
+                                   onclick="return confirm('Toggle superuser status for {{ user_item.username }}?')">
+                                    <i class="bi bi-star"></i>
+                                </a>
+                                
+                                <a href="#" onclick="confirmDelete(event, '{{ user_item.username }}', '{% url 'ministry_admin:user_delete' user_item.pk %}')" 
+                                   class="btn btn-sm btn-admin-delete" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5">
+                        <i class="bi bi-people" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="mt-3 text-muted">No users found</p>
+                        <a href="{% url 'ministry_admin:user_add' %}" class="btn btn-admin-primary">
+                            <i class="bi bi-plus-circle"></i> Add Your First User
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Bulk Actions -->
+    <div class="row mt-3 align-items-center">
+        <div class="col-md-4">
+            <select class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                <option>Bulk Actions</option>
+                <option>Delete Selected</option>
+                <option>Activate Selected</option>
+                <option>Deactivate Selected</option>
+                <option>Make Staff</option>
+                <option>Remove Staff</option>
+            </select>
+            <button class="btn btn-sm btn-admin-outline ms-2">Apply</button>
+        </div>
+        <div class="col-md-8">
+            {% include 'ministry/admin/includes/pagination.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- User Stats Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h3 class="stat-number">{{ total_users }}</h3>
+            <p class="stat-label">Total Users</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-shield"></i>
+            </div>
+            <h3 class="stat-number">{{ staff_users|default:'0' }}</h3>
+            <p class="stat-label">Staff Users</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-star"></i>
+            </div>
+            <h3 class="stat-number">{{ superusers|default:'0' }}</h3>
+            <p class="stat-label">Superusers</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-person-check"></i>
+            </div>
+            <h3 class="stat-number">{{ active_users|default:'0' }}</h3>
+            <p class="stat-label">Active Today</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.user-avatar-sm {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+</style>
+{% endblock %}

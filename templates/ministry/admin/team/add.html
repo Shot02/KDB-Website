@@ -1,0 +1,179 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Add Team Member{% endblock %}
+
+{% block page_title %}Add New Team Member{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-person-plus me-2"></i>Add New Team Member</h3>
+                <a href="{% url 'ministry_admin:team_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Team
+                </a>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" class="mt-4" id="teamForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control-admin" 
+                                   placeholder="e.g., Rev Dr. Otto" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Position <span class="text-danger">*</span></label>
+                            <input type="text" name="position" class="form-control-admin" 
+                                   placeholder="e.g., Presiding Leader" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Order</label>
+                    <input type="number" name="order" class="form-control-admin" value="0" min="0">
+                    <div class="form-text">Display order (lower numbers appear first)</div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Photo</label>
+                    <div class="file-upload">
+                        <input type="file" name="photo" id="photoUpload" accept="image/*" 
+                               onchange="previewImage(this, 'photoPreview')">
+                        <label for="photoUpload" class="file-upload-label">
+                            <i class="bi bi-cloud-upload"></i> Choose Photo
+                        </label>
+                        <span class="ms-2" id="photoFileName">No file chosen</span>
+                    </div>
+                    <div class="form-text">Recommended: Square image, 500x500px, max 2MB</div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-admin-primary">
+                        <i class="bi bi-save"></i> Add Team Member
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary ms-2">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-image"></i> Photo Preview</h3>
+            </div>
+            <div class="text-center">
+                <div class="photo-preview-container" id="photoPreviewContainer" style="display: none;">
+                    <img id="photoPreview" class="img-fluid rounded-circle mb-3" 
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+                <div class="default-preview" id="defaultPreview">
+                    <div class="preview-avatar mb-2">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <p class="text-muted">No photo selected</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-info-circle"></i> Quick Tips</h3>
+            </div>
+            <ul class="list-unstyled">
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Use clear, professional photos
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Square images work best
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Include titles like "Rev.", "Pastor", "Bro.", "Sis."
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Order determines display position
+                </li>
+            </ul>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-people"></i> Current Team</h3>
+            </div>
+            <div class="team-count text-center p-3">
+                <h2 class="text-primary">{{ total_team|default:'0' }}</h2>
+                <p class="text-muted">Total Team Members</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Photo file selection
+document.getElementById('photoUpload').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+    document.getElementById('photoFileName').textContent = fileName;
+});
+
+// Override preview function for this page
+function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const preview = document.getElementById(previewId);
+            preview.src = e.target.result;
+            document.getElementById('photoPreviewContainer').style.display = 'block';
+            document.getElementById('defaultPreview').style.display = 'none';
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+
+<style>
+.preview-avatar {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 3rem;
+}
+
+.photo-preview-container {
+    padding: 10px;
+}
+
+.team-count {
+    background: var(--light);
+    border-radius: 10px;
+}
+
+.team-count h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+</style>
+{% endblock %}

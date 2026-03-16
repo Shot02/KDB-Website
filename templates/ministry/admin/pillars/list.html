@@ -1,0 +1,127 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Manage Pillars{% endblock %}
+
+{% block page_title %}Five Pillars Management{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3><i class="bi bi-award-fill me-2"></i>Ministry Pillars</h3>
+        <a href="{% url 'ministry_admin:pillar_add' %}" class="btn btn-admin-primary">
+            <i class="bi bi-plus-circle"></i> Add New Pillar
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-admin table">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Acronym</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Icon</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pillar in pillars %}
+                <tr>
+                    <td>
+                        <span class="badge bg-secondary">{{ pillar.order }}</span>
+                    </td>
+                    <td><strong>{{ pillar.acronym }}</strong></td>
+                    <td>{{ pillar.title }}</td>
+                    <td>{{ pillar.description|truncatechars:50 }}</td>
+                    <td><i class="bi {{ pillar.icon }} fs-4"></i></td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{% url 'ministry_admin:pillar_edit' pillar.pk %}" 
+                               class="btn btn-sm btn-admin-edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="#" onclick="confirmDelete(event, '{{ pillar.title }}', '{% url 'ministry_admin:pillar_delete' pillar.pk %}')" 
+                               class="btn btn-sm btn-admin-delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <i class="bi bi-award" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="mt-3 text-muted">No pillars added yet</p>
+                        <a href="{% url 'ministry_admin:pillar_add' %}" class="btn btn-admin-primary">
+                            <i class="bi bi-plus-circle"></i> Add Your First Pillar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Preview Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-eye"></i> Live Preview</h3>
+                <small class="text-muted">How pillars appear on the website</small>
+            </div>
+            <div class="row">
+                {% for pillar in pillars|slice:":4" %}
+                <div class="col-md-3">
+                    <div class="pillar-preview-card">
+                        <div class="preview-icon">
+                            <i class="bi {{ pillar.icon }}"></i>
+                        </div>
+                        <span class="preview-acronym">{{ pillar.acronym }}</span>
+                        <h5>{{ pillar.title|truncatechars:20 }}</h5>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.pillar-preview-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+.preview-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    color: var(--accent);
+    font-size: 1.5rem;
+}
+
+.preview-acronym {
+    background: var(--accent);
+    color: var(--primary);
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Manage Programs{% endblock %}
+
+{% block page_title %}Weekly Programs Management{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3><i class="bi bi-calendar-week me-2"></i>Weekly Programs</h3>
+        <a href="{% url 'ministry_admin:program_add' %}" class="btn btn-admin-primary">
+            <i class="bi bi-plus-circle"></i> Add New Program
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-admin table">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Day</th>
+                    <th>Title</th>
+                    <th>Time</th>
+                    <th>Description</th>
+                    <th>Icon</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for program in programs %}
+                <tr>
+                    <td><span class="badge bg-secondary">{{ program.order }}</span></td>
+                    <td><span class="day-badge">{{ program.day }}</span></td>
+                    <td><strong>{{ program.title }}</strong></td>
+                    <td>{{ program.start_time|time:"g:i A" }} - {{ program.end_time|time:"g:i A" }}</td>
+                    <td>{{ program.description|truncatechars:30 }}</td>
+                    <td><i class="bi {{ program.icon }} fs-4"></i></td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{% url 'ministry_admin:program_edit' program.pk %}" 
+                               class="btn btn-sm btn-admin-edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="#" onclick="confirmDelete(event, '{{ program.title }}', '{% url 'ministry_admin:program_delete' program.pk %}')" 
+                               class="btn btn-sm btn-admin-delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <i class="bi bi-calendar-x" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="mt-3 text-muted">No programs added yet</p>
+                        <a href="{% url 'ministry_admin:program_add' %}" class="btn btn-admin-primary">
+                            <i class="bi bi-plus-circle"></i> Add Your First Program
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Weekly Schedule Preview -->
+<div class="content-card mt-4">
+    <div class="card-header">
+        <h3><i class="bi bi-table"></i> Weekly Schedule Preview</h3>
+    </div>
+    
+    <div class="row">
+        {% regroup programs by day as day_list %}
+        {% for day in day_list %}
+        <div class="col-md-4 mb-3">
+            <div class="schedule-day-card">
+                <h5 class="schedule-day">{{ day.grouper }}</h5>
+                {% for program in day.list %}
+                <div class="schedule-item">
+                    <span class="time">{{ program.start_time|time:"g:i A" }}</span>
+                    <span class="title">{{ program.title }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.day-badge {
+    background: var(--primary);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.schedule-day-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 4px solid var(--primary);
+}
+
+.schedule-day {
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--accent);
+}
+
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 0.9rem;
+}
+
+.schedule-item .time {
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+.schedule-item .title {
+    color: #333;
+}
+</style>
+{% endblock %}

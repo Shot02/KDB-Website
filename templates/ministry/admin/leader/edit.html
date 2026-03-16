@@ -1,0 +1,94 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Edit Leader Info{% endblock %}
+
+{% block page_title %}Presiding Leader Information{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-person-badge me-2"></i>Leader Information</h3>
+                <a href="{% url 'ministry_admin:dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control-admin" 
+                                   value="{{ leader.name|default:'Rev Dr. Otto' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" name="title" class="form-control-admin" 
+                                   value="{{ leader.title|default:'Presiding Leader & Founder' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Biography</label>
+                    <textarea name="bio" class="form-control-admin" rows="6">{{ leader.bio|default:'Rev Dr. Otto is a dedicated servant of God with a passion for reaching the unreached and bringing the light of the gospel to rural communities. With years of ministerial experience, he has been instrumental in training ministers and fostering revival among churches.\n\nUnder his leadership, KDB OTTO OUTREACH has grown to become a beacon of hope, touching countless lives through the five pillars of the ministry. His vision for Leadership Empowerment, Strategic Evangelism, Discipleship, and International Leadership Training continues to transform lives across nations.\n\nRev Dr. Otto believes in the power of unity among ministers and works tirelessly to bring revival in the church and among fellow ministers of the gospel.' }}</textarea>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Photo</label>
+                    <input type="file" name="photo" class="form-control" accept="image/*" 
+                           onchange="previewImage(this, 'photoPreview')">
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-admin-primary">
+                        <i class="bi bi-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-image"></i>Current Photo</h3>
+            </div>
+            <div class="text-center">
+                {% if leader.photo %}
+                <img src="{{ leader.photo.url }}" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="no-photo-placeholder">
+                    <i class="bi bi-person-fill" style="font-size: 5rem;"></i>
+                    <p class="text-muted">No photo uploaded</p>
+                </div>
+                {% endif %}
+                
+                <div id="photoPreviewContainer" style="display: none;" class="mt-3">
+                    <h6>New Photo Preview:</h6>
+                    <img id="photoPreview" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-info-circle"></i>Quick Tips</h3>
+            </div>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Use a professional photo</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Square format works best</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Keep bio engaging</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,386 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Add Gallery Item{% endblock %}
+
+{% block page_title %}Add New Media Item{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-plus-circle me-2"></i>Add New Media</h3>
+                <a href="{% url 'ministry_admin:gallery_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Gallery
+                </a>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" class="mt-4" id="galleryForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control-admin" 
+                                   placeholder="e.g., Crusade 2024, Outreach Photos" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Order</label>
+                            <input type="number" name="order" class="form-control-admin" value="0" min="0">
+                            <div class="form-text">Display order</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control-admin" rows="3" 
+                              placeholder="Brief description of the media (optional)"></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Media Type <span class="text-danger">*</span></label>
+                            <select name="media_type" class="form-control-admin" id="mediaTypeSelect" required>
+                                <option value="">Select Type</option>
+                                <option value="image">Image</option>
+                                <option value="video">Video</option>
+                                <option value="flyer">Flyer/Poster</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Status</label>
+                            <div class="form-check mt-2">
+                                <input type="checkbox" name="is_active" class="form-check-input" 
+                                       id="is_active" checked>
+                                <label class="form-check-label" for="is_active">Active (visible on site)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label class="form-label">Media File <span class="text-danger">*</span></label>
+                    <div class="file-upload">
+                        <input type="file" name="file" id="fileUpload" accept="image/*,video/*,application/pdf" required
+                               onchange="previewFile(this)">
+                        <label for="fileUpload" class="file-upload-label">
+                            <i class="bi bi-cloud-upload"></i> Choose File
+                        </label>
+                        <span class="ms-2" id="fileFileName">No file chosen</span>
+                    </div>
+                    <div class="form-text" id="fileHelp">
+                        For images: JPG/PNG (max 5MB). For videos: MP4 (max 20MB). For flyers: PDF/JPG/PNG (max 10MB)
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3" id="thumbnailGroup" style="display: none;">
+                    <label class="form-label">Video Thumbnail (Optional)</label>
+                    <div class="file-upload">
+                        <input type="file" name="thumbnail" id="thumbnailUpload" accept="image/*"
+                               onchange="previewThumbnail(this)">
+                        <label for="thumbnailUpload" class="file-upload-label">
+                            <i class="bi bi-image"></i> Choose Thumbnail
+                        </label>
+                        <span class="ms-2" id="thumbnailFileName">No file chosen</span>
+                    </div>
+                    <div class="form-text">Recommended for videos, JPG/PNG, max 2MB</div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-admin-primary">
+                        <i class="bi bi-save"></i> Upload Media
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary ms-2">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="bi bi-eye"></i> Preview</h3>
+            </div>
+            <div class="text-center" id="previewContainer">
+                <div id="noFilePreview" class="py-4">
+                    <i class="bi bi-file-earmark" style="font-size: 3rem; color: #ccc;"></i>
+                    <p class="text-muted mt-2">Select a file to preview</p>
+                </div>
+                
+                <div id="imagePreviewContainer" style="display: none;">
+                    <img id="imagePreview" class="img-fluid rounded" style="max-height: 200px;">
+                </div>
+                
+                <div id="videoPreviewContainer" style="display: none;">
+                    <video id="videoPreview" controls style="max-height: 200px;">
+                        <source src="" type="video/mp4">
+                    </video>
+                </div>
+                
+                <div id="flyerPreviewContainer" style="display: none;">
+                    <div class="flyer-preview p-3">
+                        <i class="bi bi-file-pdf" style="font-size: 4rem; color: #dc3545;"></i>
+                        <p class="mt-2 mb-0"><strong>PDF Flyer</strong></p>
+                        <p class="small text-muted">Click submit to upload</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="thumbnailPreviewContainer" style="display: none;" class="mt-3 text-center">
+                <h6 class="mb-2">Thumbnail Preview:</h6>
+                <img id="thumbnailPreview" class="img-fluid rounded" style="max-height: 80px;">
+            </div>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-info-circle"></i> File Requirements</h3>
+            </div>
+            <table class="table table-sm table-borderless">
+                <tr>
+                    <td><span class="badge bg-primary">Images</span></td>
+                    <td>JPG, PNG, GIF</td>
+                    <td>≤ 5MB</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-danger">Videos</span></td>
+                    <td>MP4</td>
+                    <td>≤ 20MB</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-warning">Flyers</span></td>
+                    <td>PDF, JPG, PNG</td>
+                    <td>≤ 10MB</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-lightbulb"></i> Tips</h3>
+            </div>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Use descriptive titles
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Optimize images for web (compress large files)
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Add thumbnails for videos (helps with loading)
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Order: lower numbers appear first
+                </li>
+            </ul>
+        </div>
+        
+        <div class="content-card mt-3">
+            <div class="card-header">
+                <h3><i class="bi bi-question-circle"></i> Need Help?</h3>
+            </div>
+            <p class="small text-muted mb-0">
+                For large video files, compress them first using online tools. 
+                Recommended resolution: 1920x1080 for videos, 1200x800 for images.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle thumbnail field based on media type
+document.getElementById('mediaTypeSelect').addEventListener('change', function() {
+    const thumbnailGroup = document.getElementById('thumbnailGroup');
+    const fileHelp = document.getElementById('fileHelp');
+    
+    if (this.value === 'video') {
+        thumbnailGroup.style.display = 'block';
+        fileHelp.innerHTML = 'MP4 format recommended. Max 20MB. <span class="text-warning">Videos will autoplay muted on the site.</span>';
+    } else if (this.value === 'flyer') {
+        thumbnailGroup.style.display = 'none';
+        fileHelp.innerHTML = 'PDF, JPG or PNG. Max 10MB. <span class="text-info">Flyers can be downloaded by visitors.</span>';
+    } else if (this.value === 'image') {
+        thumbnailGroup.style.display = 'none';
+        fileHelp.innerHTML = 'JPG/PNG format. Max 5MB. <span class="text-success">Images will open in lightbox gallery.</span>';
+    } else {
+        thumbnailGroup.style.display = 'none';
+        fileHelp.innerHTML = 'Select a media type first';
+    }
+});
+
+// File name display
+document.getElementById('fileUpload').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+    document.getElementById('fileFileName').textContent = fileName;
+});
+
+document.getElementById('thumbnailUpload').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+    document.getElementById('thumbnailFileName').textContent = fileName;
+});
+
+// Preview file function
+function previewFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const mediaType = document.getElementById('mediaTypeSelect').value;
+    const noFilePreview = document.getElementById('noFilePreview');
+    const imagePreview = document.getElementById('imagePreviewContainer');
+    const videoPreview = document.getElementById('videoPreviewContainer');
+    const flyerPreview = document.getElementById('flyerPreviewContainer');
+    
+    // Hide all previews first
+    noFilePreview.style.display = 'none';
+    imagePreview.style.display = 'none';
+    videoPreview.style.display = 'none';
+    flyerPreview.style.display = 'none';
+    
+    // Check if media type matches file type
+    if (mediaType === 'image' && file.type.startsWith('image/')) {
+        imagePreview.style.display = 'block';
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+    else if (mediaType === 'video' && file.type.startsWith('video/')) {
+        videoPreview.style.display = 'block';
+        const video = document.getElementById('videoPreview');
+        const url = URL.createObjectURL(file);
+        video.src = url;
+    }
+    else if (mediaType === 'flyer' && (file.type === 'application/pdf' || file.type.startsWith('image/'))) {
+        flyerPreview.style.display = 'block';
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('flyerPreviewContainer').innerHTML = `
+                    <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;">
+                    <p class="mt-2 small">Image Flyer</p>
+                `;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+    else {
+        // File type doesn't match selected media type
+        noFilePreview.style.display = 'block';
+        alert('Warning: The file type does not match the selected media type. Please select the correct media type or choose a different file.');
+    }
+}
+
+// Thumbnail preview
+function previewThumbnail(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const preview = document.getElementById('thumbnailPreview');
+            preview.src = e.target.result;
+            document.getElementById('thumbnailPreviewContainer').style.display = 'block';
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Validate form before submit
+document.getElementById('galleryForm').addEventListener('submit', function(e) {
+    const mediaType = document.getElementById('mediaTypeSelect').value;
+    const fileInput = document.getElementById('fileUpload');
+    
+    if (!mediaType) {
+        e.preventDefault();
+        alert('Please select a media type');
+        return false;
+    }
+    
+    if (!fileInput.files[0]) {
+        e.preventDefault();
+        alert('Please select a file to upload');
+        return false;
+    }
+    
+    return true;
+});
+</script>
+
+<style>
+.file-upload {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.file-upload input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.file-upload-label {
+    background: var(--light);
+    color: var(--primary);
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px dashed var(--primary);
+    width: 100%;
+    justify-content: center;
+}
+
+.file-upload-label:hover {
+    background: var(--primary);
+    color: white;
+}
+
+#fileFileName {
+    display: block;
+    margin-top: 5px;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+#imagePreviewContainer,
+#videoPreviewContainer,
+#flyerPreviewContainer {
+    padding: 10px;
+    background: var(--light);
+    border-radius: 10px;
+}
+
+.flyer-preview {
+    background: var(--light);
+    border-radius: 10px;
+}
+
+.table td {
+    padding: 5px;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}

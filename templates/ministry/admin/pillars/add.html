@@ -1,0 +1,114 @@
+{% extends 'ministry/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Add New Pillar{% endblock %}
+
+{% block page_title %}Add New Ministry Pillar{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3><i class="bi bi-plus-circle me-2"></i>Add New Pillar</h3>
+        <a href="{% url 'ministry_admin:pillar_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Pillars
+        </a>
+    </div>
+    
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Acronym <span class="text-danger">*</span></label>
+                    <input type="text" name="acronym" class="form-control-admin" 
+                           placeholder="e.g., LEP, EBO, DF, ISL" required maxlength="10">
+                    <div class="form-text">Short code for the pillar (e.g., LEP)</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Order</label>
+                    <input type="number" name="order" class="form-control-admin" value="0" min="0">
+                    <div class="form-text">Display order (lower numbers appear first)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label class="form-label">Title <span class="text-danger">*</span></label>
+            <input type="text" name="title" class="form-control-admin" 
+                   placeholder="e.g., Leadership Empowerment Program" required>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label class="form-label">Description <span class="text-danger">*</span></label>
+            <textarea name="description" class="form-control-admin" rows="4" 
+                      placeholder="Describe what this pillar does..." required></textarea>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Icon <span class="text-danger">*</span></label>
+                    <select name="icon" class="form-control-admin select2" required>
+                        <option value="">Select an icon...</option>
+                        <option value="bi-award-fill">Award</option>
+                        <option value="bi-megaphone-fill">Megaphone</option>
+                        <option value="bi-people-fill">People</option>
+                        <option value="bi-globe">Globe</option>
+                        <option value="bi-book-fill">Book</option>
+                        <option value="bi-heart-fill">Heart</option>
+                        <option value="bi-star-fill">Star</option>
+                        <option value="bi-lightbulb-fill">Lightbulb</option>
+                        <option value="bi-tree-fill">Tree</option>
+                        <option value="bi-cup-hot-fill">Cup</option>
+                    </select>
+                    <div class="form-text">Bootstrap Icon class name</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Icon Preview</label>
+                    <div class="icon-preview">
+                        <i class="bi bi-award-fill" id="iconPreview"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-admin-primary">
+                <i class="bi bi-save"></i> Create Pillar
+            </button>
+            <a href="{% url 'ministry_admin:pillar_list' %}" class="btn btn-outline-secondary ms-2">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Icon preview
+document.querySelector('select[name="icon"]').addEventListener('change', function() {
+    const icon = this.value;
+    document.getElementById('iconPreview').className = 'bi ' + icon;
+});
+</script>
+
+<style>
+.icon-preview {
+    background: var(--primary);
+    color: var(--accent);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+</style>
+{% endblock %}
